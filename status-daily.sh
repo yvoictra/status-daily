@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ./status_daily.config
+. ./status-daily.config
 
 from_email="From: `hostname` <admin@`hostname --fqdn`>"
 subject_email="`hostname` - Daily Status Report"
