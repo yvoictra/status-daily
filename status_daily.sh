@@ -1,0 +1,1 @@
+status_daily_20200418.sh
