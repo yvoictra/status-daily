@@ -2,4 +2,4 @@
 
 # Crontab
 
-0 6 * * * /root/status_daily/status_daily.sh >> /dev/null 2>&1
+0 6 * * * /usr/local/bin/status-daily/status-daily.sh >> /dev/null 2>&1
