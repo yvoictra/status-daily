@@ -1,12 +1,17 @@
 #!/bin/bash
 
+# Load the configuration file
+
 . /usr/local/bin/status-daily/status-daily.config
+
+# Prepare the e-mail
 
 from_email="From: `hostname` <admin@`hostname --fqdn`>"
 subject_email="`hostname` - Daily Status Report [`curl -s ipinfo.io/ip`]"
 
-
 echo "<html><body><pre>" > /tmp/status_daily.txt
+
+# Prepare vnstat output
 
 VNSTAT_IFS=`vnstat --iflist | sed -E 's/^[^:]+:[ \t]+//' | sed -E 's/lo //' | sed -E 's/\(.+\) //'`
 
@@ -25,6 +30,8 @@ do
 	echo >> /tmp/status_daily.txt
 done
 
+# Prepare fail2ban output
+
 JAILS=`fail2ban-client status | grep "Jail list" | sed -E 's/^[^:]+:[ \t]+//' | sed 's/,//g'`
 for JAIL in $JAILS
 do
@@ -35,5 +42,7 @@ do
 done
 
 echo "</pre></body></html>" >> /tmp/status_daily.txt
+
+# Send mail
 
 mail -a "Content-type: text/html;" -a "$from_email" -s "$subject_email" $dest_email < /tmp/status_daily.txt
