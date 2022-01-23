@@ -3,7 +3,7 @@
 . /usr/local/bin/status-daily/status-daily.config
 
 from_email="From: `hostname` <admin@`hostname --fqdn`>"
-subject_email="`hostname` - Daily Status Report"
+subject_email="`hostname` - Daily Status Report [`curl -s ipinfo.io/ip`]"
 
 
 echo "<html><body><pre>" > /tmp/status_daily.txt
@@ -19,6 +19,9 @@ do
 	echo >> /tmp/status_daily.txt
 
 	vnstat -h -i $VNSTAT_IF >> /tmp/status_daily.txt
+	echo >> /tmp/status_daily.txt
+
+	vnstat -hg -i $VNSTAT_IF >> /tmp/status_daily.txt
 	echo >> /tmp/status_daily.txt
 done
 
