@@ -11,12 +11,19 @@ subject_email="`hostname` - Daily Status Report [`curl -s ipinfo.io/ip`]"
 
 echo "<html><body><pre>" > /tmp/status_daily.txt
 
+echo "################################################################################" >> /tmp/status_daily.txt
+echo "# vnstat Statistics" >> /tmp/status_daily.txt
+echo "################################################################################" >> /tmp/status_daily.txt
+
 # Prepare vnstat output
 
 VNSTAT_IFS=`vnstat --iflist | sed -E 's/^[^:]+:[ \t]+//' | sed -E 's/lo //' | sed -E 's/\(.+\) //'`
 
 for VNSTAT_IF in $VNSTAT_IFS
 do
+	vnstat -y -i $VNSTAT_IF >> /tmp/status_daily.txt
+	echo >> /tmp/status_daily.txt
+
 	vnstat -m -i $VNSTAT_IF >> /tmp/status_daily.txt
 	echo >> /tmp/status_daily.txt
 
@@ -28,7 +35,13 @@ do
 
 	vnstat -hg -i $VNSTAT_IF >> /tmp/status_daily.txt
 	echo >> /tmp/status_daily.txt
+
+	echo "################################################################################" >> /tmp/status_daily.txt
 done
+
+echo "################################################################################" >> /tmp/status_daily.txt
+echo "# fail2ban Statistics" >> /tmp/status_daily.txt
+echo "################################################################################" >> /tmp/status_daily.txt
 
 # Prepare fail2ban output
 
@@ -40,6 +53,14 @@ do
 	fail2ban-client get $JAIL bantime >> /tmp/status_daily.txt
 	echo >> /tmp/status_daily.txt
 done
+
+# Send mail statistics
+
+echo "################################################################################" >> /tmp/status_daily.txt
+echo "# Mail Statistics" >> /tmp/status_daily.txt
+echo "################################################################################" >> /tmp/status_daily.txt
+
+cat $(find /var/log/ -type f ! -name "*.gz" -name "mail.log*" 2> /dev/null) | /usr/sbin/pflogsumm -d yesterday >> /tmp/status_daily.txt
 
 echo "</pre></body></html>" >> /tmp/status_daily.txt
 
