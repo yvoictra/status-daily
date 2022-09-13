@@ -6,8 +6,17 @@
 
 # Prepare the e-mail
 
+ipv4=`curl -s -4 icanhazip.com`
+ipv6=`curl -s -6 icanhazip.com`
+
 from_email="From: `hostname` <admin@`hostname --fqdn`>"
-subject_email="`hostname` - Daily Status Report [`curl -s ipinfo.io/ip`]"
+
+if [ -z "$ipv6" ]
+then
+	subject_email="`hostname` - Daily Status Report [$ipv4]"
+else
+	subject_email="`hostname` - Daily Status Report [$ipv4 | $ipv6]"
+fi
 
 echo "<html><body><pre>" > /tmp/status_daily.txt
 
